@@ -1,0 +1,43 @@
+{
+  "name": "vscode-test-set-content",
+  "version": "1.0.0",
+  "description": "A set of helper functions for getting content of the Visual Studio Code instance.",
+  "publisher": "mlewand",
+  "engines": {
+    "vscode": "^1.5.0"
+  },
+  "activationEvents": [],
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlewand/vscode-test-set-content.git"
+  },
+  "keywords": [
+    "vscode",
+    "test",
+    "unit-tests",
+    "tdd"
+  ],
+  "author": "Marek Lewandowski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mlewand/vscode-test-set-content/issues"
+  },
+  "homepage": "https://github.com/mlewand/vscode-test-set-content#readme",
+  "dependencies": {
+    "vscode": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^2.0.3",
+    "mocha": "^2.3.3",
+    "@types/node": "^6.0.40",
+    "@types/mocha": "^2.2.32"
+  }
+}
