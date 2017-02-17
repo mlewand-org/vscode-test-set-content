@@ -32,5 +32,12 @@
                     assert.strictEqual( 'foo bar', getContent( editor ), 'Editor has invalid value' );
                 } );
         } );
+
+        test( 'It sets given multiline content', function() {
+            return setContent( 'foo bar\nbaz\n\t bom' )
+                .then( editor => {
+                    assert.strictEqual( 'foo bar\nbaz\n\t bom', getContent( editor ), 'Editor has invalid value' );
+                } );
+        } );
     } );
 } )();
