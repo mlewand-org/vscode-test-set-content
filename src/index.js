@@ -30,6 +30,8 @@ function setContent( content, options ) {
         } );
 }
 
-setContent.withSelection = function( content, options ) {};
+setContent.withSelection = function( content, options ) {
+
+};
 
 module.exports = setContent;

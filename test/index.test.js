@@ -40,4 +40,11 @@
                 } );
         } );
     } );
+
+    suite( 'setContent.withSelection', function() {
+        test( 'It sets the content', function() {
+            return setContent.withSelection( 'foo' )
+                .then( editor => assert.strictEqual( getContent( editor ), 'foo', 'Invalid content') );
+        } );
+    } );
 } )();
