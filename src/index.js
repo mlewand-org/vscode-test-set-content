@@ -18,7 +18,15 @@ function setContent( content, options ) {
         } )
         .then( doc => vscode.window.showTextDocument( doc ) )
         .then( editor => {
-            return editor;
+            let editBuilder = textEdit => {
+                textEdit.insert( new vscode.Position( 0, 0 ), String( content ) );
+            };
+
+            return editor.edit( editBuilder, {
+                    undoStopBefore: true,
+                    undoStopAfter: false
+                } )
+                .then( () => editor );
         } );
 }
 
