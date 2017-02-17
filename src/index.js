@@ -14,7 +14,7 @@ function setContent( content, options ) {
     };
 
     return vscode.workspace.openTextDocument( {
-            language: 'text'
+            language: options.language
         } )
         .then( doc => vscode.window.showTextDocument( doc ) )
         .then( editor => {

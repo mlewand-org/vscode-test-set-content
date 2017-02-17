@@ -3,7 +3,6 @@
     "use strict";
 
     const assert = require( 'assert' ),
-        vscode = require( 'vscode' ),
         setContent = require( '../src' ),
         getContent = require( 'vscode-test-get-content' );
 
@@ -70,6 +69,6 @@
                 content: 'abc',
                 selections: []
             }, 'Invalid return value' );
-        } )
-    } )
+        } );
+    } );
 } )();
