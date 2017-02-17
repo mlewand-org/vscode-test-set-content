@@ -31,7 +31,11 @@ function setContent( content, options ) {
 }
 
 setContent.withSelection = function( content, options ) {
-
+    return setContent( content, options )
+        .then( editor => {
+            // Make the selections.
+            return editor;
+        } );
 };
 
 module.exports = setContent;

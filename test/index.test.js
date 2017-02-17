@@ -44,7 +44,21 @@
     suite( 'setContent.withSelection', function() {
         test( 'It sets the content', function() {
             return setContent.withSelection( 'foo' )
-                .then( editor => assert.strictEqual( getContent( editor ), 'foo', 'Invalid content') );
+                .then( editor => assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' ) );
+        } );
+
+        test( 'It sets a collapsed selection', function() {
+            return setContent.withSelection( 'fo^o' )
+                .then( editor => {
+                    let sel = editor.selection,
+                        startPosition = sel.start;
+
+                    assert.strictEqual( sel.isEmpty, true, 'Selection is not empty' );
+                    assert.strictEqual( startPosition.line, 0, 'Invalid start.line' );
+                    assert.strictEqual( startPosition.character, 2, 'Invalid start.character' );
+
+                    assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' );
+                } );
         } );
     } );
 } )();
