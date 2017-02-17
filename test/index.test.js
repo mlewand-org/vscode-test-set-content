@@ -3,6 +3,7 @@
     "use strict";
 
     const assert = require( 'assert' ),
+        vscode = require( 'vscode' ),
         setContent = require( '../src' ),
         getContent = require( 'vscode-test-get-content' );
 
@@ -61,9 +62,54 @@
         } );
     } );
 
-    suite( '_extractSelections', () => {
-        test( 'works with selectionless content', function() {
+    suite.only( '_extractSelections', () => {
+        // Usage:
+        // assertSelection( sel, { line: 0, character: 6 }, { line: 0, character: 8 } );
+        /**
+         *
+         * @private
+         * @param {any} actual
+         * @param {any} start
+         * @param {any} [end] If skipped it's assumed to be a collapsed selection.
+         */
+        function assertSelection( actual, start, end, selectionName ) {
+            selectionName = selectionName || 'Selection';
+
+            assert.equal( actual instanceof vscode.Selection, true, `${selectionName} is invalid type (${typeof actual}) ` );
+
+            if ( !end ) {
+                assert.equal( actual.isEmpty, true, `${selectionName} is not empty` );
+            }
+
+            assert.equal( actual.start.line, start.line, `Invalid ${selectionName}.start.line` );
+            assert.equal( actual.start.character, start.character, `Invalid ${selectionName}.start.character` );
+
+            if ( end ) {
+                assert.equal( actual.end.line, end.line, `Invalid ${selectionName}.end.line` );
+                assert.equal( actual.end.character, end.character, `Invalid ${selectionName}.end.character` );
+            }
+        }
+
+        test( 'Works with selectionless content', function() {
             let ret = setContent._extractSelections( 'abc' );
+
+            assert.deepEqual( ret, {
+                content: 'abc',
+                selections: []
+            }, 'Invalid return value' );
+        } );
+
+        test( 'Works a single caret', function() {
+            let ret = setContent._extractSelections( '^abc' );
+
+            assert.deepEqual( ret, {
+                content: 'abc',
+                selections: []
+            }, 'Invalid return value' );
+        } );
+
+        test( 'Works multiple carets', function() {
+            let ret = setContent._extractSelections( '^ab^c' );
 
             assert.deepEqual( ret, {
                 content: 'abc',
