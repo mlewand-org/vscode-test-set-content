@@ -5,7 +5,7 @@
     const assert = require( 'assert' ),
         vscode = require( 'vscode' ),
         path = require( 'path' ),
-        editorHelpers = require( '../src' );
+        mainModule = require( '../src' );
 
     suite( '_helpers.editor getContentWithSelections', function() {
         test( 'It returns a single collapsed selection', function() {
@@ -15,7 +15,7 @@
                 } )
                 .then( textEditor => {
                     textEditor.selection = new vscode.Selection( 0, 1, 0, 1 );
-                    assert.equal( editorHelpers.getContentWithSelections( textEditor ), 'a^aa bbb' );
+                    assert.equal( mainModule.getContentWithSelections( textEditor ), 'a^aa bbb' );
                 } );
         } );
 
@@ -30,7 +30,7 @@
                         'eee fff';
 
                     textEditor.selection = new vscode.Selection( 0, 4, 0, 4 );
-                    assert.equal( editorHelpers.getContentWithSelections( textEditor ), expected );
+                    assert.equal( mainModule.getContentWithSelections( textEditor ), expected );
                 } );
         } );
 
@@ -50,7 +50,7 @@
                         new vscode.Selection( 1, 7, 1, 7 ),
                         new vscode.Selection( 2, 0, 2, 0 )
                     ];
-                    assert.equal( editorHelpers.getContentWithSelections( textEditor ), expected );
+                    assert.equal( mainModule.getContentWithSelections( textEditor ), expected );
                 } );
         } );
 
@@ -61,7 +61,7 @@
                 } )
                 .then( textEditor => {
                     textEditor.selection = new vscode.Selection( 0, 1, 0, 3 );
-                    assert.equal( editorHelpers.getContentWithSelections( textEditor ), 'a[aa} bbb' );
+                    assert.equal( mainModule.getContentWithSelections( textEditor ), 'a[aa} bbb' );
                 } );
         } );
 
@@ -79,7 +79,7 @@
                         new vscode.Selection( 0, 1, 0, 3 ),
                         new vscode.Selection( 1, 5, 1, 1 )
                     ];
-                    assert.equal( editorHelpers.getContentWithSelections( textEditor ), expected );
+                    assert.equal( mainModule.getContentWithSelections( textEditor ), expected );
                 } );
         } );
 
@@ -97,7 +97,7 @@
                         new vscode.Selection( 0, 1, 0, 1 ),
                         new vscode.Selection( 1, 1, 1, 4 )
                     ];
-                    assert.equal( editorHelpers.getContentWithSelections( textEditor ), expected );
+                    assert.equal( mainModule.getContentWithSelections( textEditor ), expected );
                 } );
         } );
     } );
