@@ -7,7 +7,7 @@
         setContent = require( '../src' ),
         getContent = require( 'vscode-test-get-content' );
 
-    suite( 'setContent', function() {
+    suite( 'setContent', () => {
         test( 'It returns a valid type', function() {
             let ret = setContent( 'foo' );
 
@@ -41,7 +41,7 @@
         } );
     } );
 
-    suite( 'setContent.withSelection', function() {
+    suite( 'setContent.withSelection', () => {
         test( 'It sets the content', function() {
             return setContent.withSelection( 'foo' )
                 .then( editor => assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' ) );
@@ -61,4 +61,15 @@
                 } );
         } );
     } );
+
+    suite( '_extractSelections', () => {
+        test( 'works with selectionless content', function() {
+            let ret = setContent._extractSelections( 'abc' );
+
+            assert.deepEqual( ret, {
+                content: 'abc',
+                selections: []
+            }, 'Invalid return value' );
+        } )
+    } )
 } )();

@@ -30,6 +30,27 @@ function setContent( content, options ) {
         } );
 }
 
+/**
+ * Extracts selections and markerless content out of given `inContent`.
+ *
+ * @private
+ * @param {String} inContent Input content with selection markers.
+ * @returns {Object} ret
+ * @returns {String} ret.content Content without selection-specific markers.
+ * @returns {Selection[]} ret.selections Selections picked from `inContent`.
+ */
+setContent._extractSelections = function( inContent ) {
+    let selections = [],
+        ret = {
+            content: '',
+            selections: selections
+        };
+
+    ret.content = inContent;
+
+    return ret;
+};
+
 setContent.withSelection = function( content, options ) {
     return setContent( content, options )
         .then( editor => {
