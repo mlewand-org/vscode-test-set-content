@@ -12,8 +12,8 @@
     "test": "test"
   },
   "scripts": {
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
+    "vscode-postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run vscode-postinstall && node ./node_modules/vscode/bin/test"
   },
   "repository": {
     "type": "git",
