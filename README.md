@@ -1,5 +1,5 @@
 
-# vscode-test-set-content
+# vscode-test-set-content [![Build Status](https://travis-ci.org/mlewand-org/vscode-test-set-content.svg?branch=master)](https://travis-ci.org/mlewand-org/vscode-test-set-content)
 
 Provides a set of helper functions for setting the content of the Visual Studio Code instance.
 
