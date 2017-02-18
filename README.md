@@ -55,3 +55,7 @@ setContent.withSelection( 'Fancy [content}!' )
 ## Limitations
 
 * Nested and intersecting ranges are not handled, since those are not handled in VSCode itself as of version 1.9.1.
+
+## Related
+
+If you need to easily get your content with or without selection, be sure to check [vscode-test-get-content](https://www.npmjs.com/package/vscode-test-get-content) package.
