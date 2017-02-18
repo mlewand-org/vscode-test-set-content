@@ -1,7 +1,7 @@
 {
   "name": "vscode-test-set-content",
   "version": "1.0.0",
-  "description": "A set of helper functions for getting content of the Visual Studio Code instance.",
+  "description": "A set of helper functions for setting content of the Visual Studio Code instance.",
   "publisher": "mlewand",
   "engines": {
     "vscode": "^1.9.0"
