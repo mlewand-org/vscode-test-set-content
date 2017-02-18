@@ -39,39 +39,51 @@
                     assert.strictEqual( 'foo bar\nbaz\n\t bom', getContent( editor ), 'Editor has invalid value' );
                 } );
         } );
-    } );
 
-    suite( 'setContent.withSelection', () => {
-        test( 'It sets the content', function() {
-            return setContent.withSelection( 'foo' )
-                .then( editor => assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' ) );
-        } );
-
-        test( 'It sets a collapsed selection', function() {
-            return setContent.withSelection( 'fo^o' )
-                .then( editor => {
-                    let sel = editor.selection,
-                        startPosition = sel.start;
-
-                    assert.strictEqual( sel.isEmpty, true, 'Selection is not empty' );
-                    assert.strictEqual( startPosition.line, 0, 'Invalid start.line' );
-                    assert.strictEqual( startPosition.character, 2, 'Invalid start.character' );
-
-                    assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' );
+        suite( 'setContent.withSelection', () => {
+            suite( 'Collapsed', function() {
+                test( 'It sets the content', function() {
+                    return setContent.withSelection( 'foo' )
+                        .then( editor => assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' ) );
                 } );
-        } );
 
-        test( 'It sets multiple collapsed selections multiline', function() {
-            let content = 'a^a^\n\n^\n^foo^\nbar';
+                test( 'It sets a collapsed selection', function() {
+                    return setContent.withSelection( 'fo^o' )
+                        .then( editor => {
+                            let sel = editor.selection,
+                                startPosition = sel.start;
 
-            return setContent.withSelection( content )
-                .then( editor => {
-                    assert.strictEqual( getContent( editor ), 'aa\n\n\nfoo\nbar', 'Invalid content' );
-                    assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                            assert.strictEqual( sel.isEmpty, true, 'Selection is not empty' );
+                            assert.strictEqual( startPosition.line, 0, 'Invalid start.line' );
+                            assert.strictEqual( startPosition.character, 2, 'Invalid start.character' );
+
+                            assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' );
+                        } );
                 } );
+
+                test( 'It sets multiple collapsed selections multiline', function() {
+                    let content = 'a^a^\n\n^\n^foo^\nbar';
+
+                    return setContent.withSelection( content )
+                        .then( editor => {
+                            assert.strictEqual( getContent( editor ), 'aa\n\n\nfoo\nbar', 'Invalid content' );
+                            assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                        } );
+                } );
+            } );
+
+            test( 'integration', function() {
+                let content = '^foo{ ba]r\nb[az\nb}o^m^';
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo bar\nbaz\nbom', 'Invalid content' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
         } );
 
-        suite( 'ranged', function() {
+        suite( 'Ranged', function() {
             test( 'It sets ranged selection', function() {
                 let content = 'f[oo}';
 
