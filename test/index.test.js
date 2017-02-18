@@ -70,6 +70,28 @@
                     assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
                 } );
         } );
+
+        suite( 'ranged', function() {
+            test( 'It sets ranged selection', function() {
+                let content = 'f[oo}';
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
+
+            test( 'It sets reversed ranged selection', function() {
+                let content = 'f{oo]';
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
+        } );
     } );
 
     suite( '_extractSelections', () => {
