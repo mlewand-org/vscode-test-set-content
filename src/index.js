@@ -62,9 +62,35 @@ setContent._extractSelections = function( inContent ) {
             selections: selections
         };
 
-    let collapsedRegexp = /\^/gm,
+    let collapsedRegexp = /\^|\[|\{|\]|\}/gm,
         updatedContent = '',
-        lineNumber = -1;
+        lineNumber = -1,
+        // An array of { pos: Position, anchor: Boolean } objects.
+        unbalancedRangeOpenings = [],
+        // A mapping of handling methods to a given marker.
+        markerHandlers = {
+            '^': pos => selections.push( new vscode.Selection( pos, pos ) ),
+            '[': pos => unbalancedRangeOpenings.push( { pos: pos, anchor: true } ),
+            '{': pos => unbalancedRangeOpenings.push( { pos: pos, anchor: false } ),
+            ']': pos => {
+                if ( !unbalancedRangeOpenings.length ) {
+                    return;
+                }
+
+                let matchedOpening = unbalancedRangeOpenings.shift();
+
+                selections.push( new vscode.Selection( pos, matchedOpening.pos ) );
+            },
+            '}': pos => {
+                if ( !unbalancedRangeOpenings.length ) {
+                    return;
+                }
+
+                let matchedOpening = unbalancedRangeOpenings.shift();
+
+                selections.push( new vscode.Selection( matchedOpening.pos, pos ) );
+            }
+        };
 
     for ( let line of readLines( inContent ) ) {
         let matches = execall( collapsedRegexp, line );
@@ -86,7 +112,7 @@ setContent._extractSelections = function( inContent ) {
                     // Current accumulated length, is the position of caret in updatedContent.
                     pos = new vscode.Position( lineNumber, accumulator.length );
 
-                selections.push( new vscode.Selection( pos, pos ) );
+                markerHandlers[ curMatch.match ]( pos );
 
                 return accumulator + line.substring( nextPartStart, nextPartEnd );
             }, line.substr( 0, matches[ 0 ].index ) );

@@ -39,43 +39,107 @@
                     assert.strictEqual( 'foo bar\nbaz\n\t bom', getContent( editor ), 'Editor has invalid value' );
                 } );
         } );
-    } );
 
-    suite( 'setContent.withSelection', () => {
-        test( 'It sets the content', function() {
-            return setContent.withSelection( 'foo' )
-                .then( editor => assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' ) );
+        suite( 'setContent.withSelection', () => {
+            suite( 'Collapsed', function() {
+                test( 'It sets the content', function() {
+                    return setContent.withSelection( 'foo' )
+                        .then( editor => assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' ) );
+                } );
+
+                test( 'It sets a collapsed selection', function() {
+                    return setContent.withSelection( 'fo^o' )
+                        .then( editor => {
+                            let sel = editor.selection,
+                                startPosition = sel.start;
+
+                            assert.strictEqual( sel.isEmpty, true, 'Selection is not empty' );
+                            assert.strictEqual( startPosition.line, 0, 'Invalid start.line' );
+                            assert.strictEqual( startPosition.character, 2, 'Invalid start.character' );
+
+                            assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' );
+                        } );
+                } );
+
+                test( 'It sets multiple collapsed selections multiline', function() {
+                    let content = 'a^a^\n\n^\n^foo^\nbar';
+
+                    return setContent.withSelection( content )
+                        .then( editor => {
+                            assert.strictEqual( getContent( editor ), 'aa\n\n\nfoo\nbar', 'Invalid content' );
+                            assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                        } );
+                } );
+            } );
+
+            test( 'integration', function() {
+                let content = '^foo{ ba]r\nb[az\nb}o^m^';
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo bar\nbaz\nbom', 'Invalid content' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
         } );
 
-        test( 'It sets a collapsed selection', function() {
-            return setContent.withSelection( 'fo^o' )
-                .then( editor => {
-                    let sel = editor.selection,
-                        startPosition = sel.start;
+        suite( 'Ranged', function() {
+            test( 'It sets ranged selection', function() {
+                let content = 'f[oo}';
 
-                    assert.strictEqual( sel.isEmpty, true, 'Selection is not empty' );
-                    assert.strictEqual( startPosition.line, 0, 'Invalid start.line' );
-                    assert.strictEqual( startPosition.character, 2, 'Invalid start.character' );
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
 
-                    assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' );
-                } );
-        } );
+            test( 'It sets reversed ranged selection', function() {
+                let content = 'f{oo]';
 
-        test( 'It sets multiple collapsed selections multiline', function() {
-            let content = 'a^a^\n\n^\n^foo^\nbar';
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
 
-            return setContent.withSelection( content )
-                .then( editor => {
-                    assert.strictEqual( getContent( editor ), 'aa\n\n\nfoo\nbar', 'Invalid content' );
-                    assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
-                } );
+            test( 'It supports multiple ranges', function() {
+                let content = '[foo} {bar] baz [bom}';
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo bar baz bom' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
+
+            test( 'It supports ranges spanning through multiple lines', function() {
+                let content = 'foo[ bar\n\t baz }bom';
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo bar\n\t baz bom' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
+
+            test( 'It supports multiple lines', function() {
+                let content = [ 'foo', 'b[ar}', 'baz', '{bom]' ].join( '\n' );
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo\nbar\nbaz\nbom' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
         } );
     } );
 
     suite( '_extractSelections', () => {
-        // Usage:
-        // assertSelection( sel, { line: 0, character: 6 }, { line: 0, character: 8 } );
         /**
+         *
+         *      assertSelection( sel, { line: 0, character: 6 }, { line: 0, character: 8 } );
          *
          * @private
          * @param {Selection} actual
@@ -181,13 +245,15 @@
                 } );
         } );
 
-        // Not supported yet.
-        // test( 'example 3', function() {
-        //     setContent.withSelection( 'Fancy [content}!' )
-        //         .then( textEditor => {
-        //             assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
-        //             assert.equal( textEditor.selection.isEmpty, false );
-        //         } );
-        // } );
+        test( 'example 3', function() {
+            return setContent.withSelection( 'Fancy [content}!' )
+                .then( textEditor => {
+                    assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
+                    assert.equal( textEditor.selection.isEmpty, false );
+                    assert.equal( textEditor.selection.start.character, 6 );
+                    assert.equal( textEditor.selection.end.character, 13 );
+                    assert.strictEqual( textEditor.selection.active, textEditor.selection.end );
+                } );
+        } );
     } );
 } )();
