@@ -65,15 +65,31 @@ setContent._extractSelections = function( inContent ) {
     let collapsedRegexp = /\^|\[|\{|\]|\}/gm,
         updatedContent = '',
         lineNumber = -1,
-        // An array of
+        // An array of { pos: Position, anchor: Boolean } objects.
         unbalancedRangeOpenings = [],
         // A mapping of handling methods to a given marker.
         markerHandlers = {
             '^': pos => selections.push( new vscode.Selection( pos, pos ) ),
-            '[': pos => null,
-            '{': pos => null,
-            ']': pos => null,
-            '}': pos => null
+            '[': pos => unbalancedRangeOpenings.push( { pos: pos, anchor: true } ),
+            '{': pos => unbalancedRangeOpenings.push( { pos: pos, anchor: false } ),
+            ']': pos => {
+                if ( !unbalancedRangeOpenings.length ) {
+                    return;
+                }
+
+                let matchedOpening = unbalancedRangeOpenings.shift();
+
+                selections.push( new vscode.Selection( pos, matchedOpening.pos ) );
+            },
+            '}': pos => {
+                if ( !unbalancedRangeOpenings.length ) {
+                    return;
+                }
+
+                let matchedOpening = unbalancedRangeOpenings.shift();
+
+                selections.push( new vscode.Selection( matchedOpening.pos, pos ) );
+            }
         };
 
     for ( let line of readLines( inContent ) ) {
