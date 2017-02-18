@@ -23,7 +23,7 @@ const vscode = vscode = require( 'vscode' ),
 
 setContent.withSelection( 'Put a collapsed selection here ^' )
     .then( textEditor => {
-        assert.strictEqual( textEditor.document.lineAt( 0 ).text, 'Put a collapsed selection here ' );
+        assert.equal( textEditor.document.lineAt( 0 ).text, 'Put a collapsed selection here ' );
         assert.equal( textEditor.selection.isEmpty, true );
         assert.equal( textEditor.selection.start.character, 31 );
     } );
@@ -38,7 +38,7 @@ setContent.withSelection( 'Fancy [content}!' )
         assert.equal( textEditor.selection.isEmpty, false );
         assert.equal( textEditor.selection.start.character, 6 );
         assert.equal( textEditor.selection.end.character, 13 );
-        assert.strictEqual( textEditor.selection.active, textEditor.selection.end );
+        assert.equal( textEditor.selection.active, textEditor.selection.end );
     } );
 ```
 
