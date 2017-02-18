@@ -68,9 +68,13 @@
         /**
          *
          * @private
-         * @param {any} actual
-         * @param {any} start
-         * @param {any} [end] If skipped it's assumed to be a collapsed selection.
+         * @param {Selection} actual
+         * @param {Object} start
+         * @param {Number} start.line
+         * @param {Number} start.character
+         * @param {Object} [end] If skipped it's assumed to be a collapsed selection.
+         * @param {Number} [end.line]
+         * @param {Number} [end.character]
          */
         function assertSelection( actual, start, end, selectionName ) {
             selectionName = selectionName || 'Selection';
@@ -103,15 +107,25 @@
             let ret = setContent._extractSelections( '^abc' );
 
             assert.strictEqual( ret.content, 'abc', 'Invalid content' );
-            assertSelection( ret.selections[ 0 ], { line: 0, character: 0 } );
+            assertSelection( ret.selections[ 0 ], {
+                line: 0,
+                character: 0
+            } );
         } );
 
         test( 'Works multiple carets', function() {
             let ret = setContent._extractSelections( '^ab^c' );
 
             assert.strictEqual( ret.content, 'abc', 'Invalid content' );
-            assertSelection( ret.selections[ 0 ], { line: 0, character: 0 }, null, 'Sel#1' );
-            assertSelection( ret.selections[ 0 ], { line: 0, character: 2 },null, 'Sel#2' );
+            assertSelection( ret.selections[ 0 ], {
+                line: 0,
+                character: 0
+            }, null, 'Sel#1' );
+
+            assertSelection( ret.selections[ 1 ], {
+                line: 0,
+                character: 2
+            }, null, 'Sel#2' );
         } );
     } );
 } )();

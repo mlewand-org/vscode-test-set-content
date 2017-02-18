@@ -64,14 +64,14 @@ setContent._extractSelections = function( inContent ) {
 
     let collapsedRegexp = /\^/gm,
         updatedContent = '',
-        firstIteration = true;
+        lineNumber = -1;
 
     for ( let line of readLines( inContent ) ) {
         let matches = execall( collapsedRegexp, line );
 
-        if ( firstIteration ) {
-            firstIteration = false;
-        } else {
+        lineNumber += 1;
+
+        if ( lineNumber > 0 ) {
             // So far unix style line ending only.
             updatedContent += '\n';
         }
@@ -82,7 +82,11 @@ setContent._extractSelections = function( inContent ) {
                 // for n we're adding part from **after** n.index till n+1.index (excluding char matched at n).
                 // For last iteration we want to match all the way to the end of string, thus undefined.
                 let nextPartStart = curMatch.index + curMatch.match.length,
-                    nextPartEnd = curIndex === array.length - 1 ? undefined : array[ curIndex + 1 ].index;
+                    nextPartEnd = curIndex === array.length - 1 ? undefined : array[ curIndex + 1 ].index,
+                    // Current accumulated length, is the position of caret in updatedContent.
+                    pos = new vscode.Position( lineNumber, accumulator.length );
+
+                selections.push( new vscode.Selection( pos, pos ) );
 
                 return accumulator + line.substring( nextPartStart, nextPartEnd );
             }, line.substr( 0, matches[ 0 ].index ) );
