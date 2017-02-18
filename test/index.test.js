@@ -95,9 +95,9 @@
     } );
 
     suite( '_extractSelections', () => {
-        // Usage:
-        // assertSelection( sel, { line: 0, character: 6 }, { line: 0, character: 8 } );
         /**
+         *
+         *      assertSelection( sel, { line: 0, character: 6 }, { line: 0, character: 8 } );
          *
          * @private
          * @param {Selection} actual
