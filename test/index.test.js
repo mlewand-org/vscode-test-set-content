@@ -164,7 +164,7 @@
         } );
     } );
 
-    suite.only( 'Readme examples', () => {
+    suite( 'Readme examples', () => {
         test( 'example 1', function() {
             return setContent( 'Fancy content!' )
                 .then( textEditor => {
