@@ -127,5 +127,30 @@
                 character: 2
             }, null, 'Sel#2' );
         } );
+
+        test( 'Works multiple carets multiline', function() {
+            let ret = setContent._extractSelections( '^abc^\n^\n\naa^' );
+
+            assert.strictEqual( ret.content, 'abc\n\n\naa', 'Invalid content' );
+            assertSelection( ret.selections[ 0 ], {
+                line: 0,
+                character: 0
+            }, null, 'Sel#1' );
+
+            assertSelection( ret.selections[ 1 ], {
+                line: 0,
+                character: 3
+            }, null, 'Sel#2' );
+
+            assertSelection( ret.selections[ 2 ], {
+                line: 1,
+                character: 0
+            }, null, 'Sel#3' );
+
+            assertSelection( ret.selections[ 3 ], {
+                line: 3,
+                character: 2
+            }, null, 'Sel#4' );
+        } );
     } );
 } )();
