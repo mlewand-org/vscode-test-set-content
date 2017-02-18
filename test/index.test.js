@@ -91,6 +91,36 @@
                         assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
                     } );
             } );
+
+            test( 'It supports multiple ranges', function() {
+                let content = '[foo} {bar] baz [bom}';
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo bar baz bom' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
+
+            test( 'It supports ranges spanning through multiple lines', function() {
+                let content = 'foo[ bar\n\t baz }bom';
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo bar\n\t baz bom' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
+
+            test( 'It supports multiple lines', function() {
+                let content = [ 'foo', 'b[ar}', 'baz', '{bom]' ].join( '\n' );
+
+                return setContent.withSelection( content )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'foo\nbar\nbaz\nbom' );
+                        assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                    } );
+            } );
         } );
     } );
 
