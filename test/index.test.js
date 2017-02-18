@@ -233,13 +233,15 @@
                 } );
         } );
 
-        // Not supported yet.
-        // test( 'example 3', function() {
-        //     setContent.withSelection( 'Fancy [content}!' )
-        //         .then( textEditor => {
-        //             assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
-        //             assert.equal( textEditor.selection.isEmpty, false );
-        //         } );
-        // } );
+        test( 'example 3', function() {
+            return setContent.withSelection( 'Fancy [content}!' )
+                .then( textEditor => {
+                    assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
+                    assert.equal( textEditor.selection.isEmpty, false );
+                    assert.equal( textEditor.selection.start.character, 6 );
+                    assert.equal( textEditor.selection.end.character, 13 );
+                    assert.strictEqual( textEditor.selection.active, textEditor.selection.end );
+                } );
+        } );
     } );
 } )();
