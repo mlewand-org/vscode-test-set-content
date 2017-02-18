@@ -62,7 +62,7 @@
         } );
     } );
 
-    suite.only( '_extractSelections', () => {
+    suite( '_extractSelections', () => {
         // Usage:
         // assertSelection( sel, { line: 0, character: 6 }, { line: 0, character: 8 } );
         /**
@@ -102,19 +102,16 @@
         test( 'Works a single caret', function() {
             let ret = setContent._extractSelections( '^abc' );
 
-            assert.deepEqual( ret, {
-                content: 'abc',
-                selections: []
-            }, 'Invalid return value' );
+            assert.strictEqual( ret.content, 'abc', 'Invalid content' );
+            assertSelection( ret.selections[ 0 ], { line: 0, character: 0 } );
         } );
 
         test( 'Works multiple carets', function() {
             let ret = setContent._extractSelections( '^ab^c' );
 
-            assert.deepEqual( ret, {
-                content: 'abc',
-                selections: []
-            }, 'Invalid return value' );
+            assert.strictEqual( ret.content, 'abc', 'Invalid content' );
+            assertSelection( ret.selections[ 0 ], { line: 0, character: 0 }, null, 'Sel#1' );
+            assertSelection( ret.selections[ 0 ], { line: 0, character: 2 },null, 'Sel#2' );
         } );
     } );
 } )();

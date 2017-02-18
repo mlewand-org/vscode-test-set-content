@@ -1,4 +1,5 @@
-let vscode = require( 'vscode' );
+const vscode = require( 'vscode' ),
+    execall = require( 'execall' );
 
 /**
  * Returns a promise that will provide a tet editor with given `content`.
@@ -30,6 +31,21 @@ function setContent( content, options ) {
         } );
 }
 
+function* readLines( content ) {
+    let newLineRegexp = /\r\n?|\n/gm,
+        curOffset = 0,
+        lastLineMatch;
+
+    while ( ( lastLineMatch = newLineRegexp.exec( content ) ) !== null ) {
+        yield content.substring( curOffset, lastLineMatch.index );
+        curOffset = lastLineMatch.index + lastLineMatch[ 0 ].length;
+    };
+
+    if ( curOffset < content.length ) {
+        yield content.substring( curOffset );
+    }
+}
+
 /**
  * Extracts selections and markerless content out of given `inContent`.
  *
@@ -46,7 +62,36 @@ setContent._extractSelections = function( inContent ) {
             selections: selections
         };
 
-    ret.content = inContent;
+    let collapsedRegexp = /\^/gm,
+        updatedContent = '',
+        firstIteration = true;
+
+    for ( let line of readLines( inContent ) ) {
+        let matches = execall( collapsedRegexp, line );
+
+        if ( firstIteration ) {
+            firstIteration = false;
+        } else {
+            // So far unix style line ending only.
+            updatedContent += '\n';
+        }
+
+        if ( matches && matches.length ) {
+            updatedContent += matches.reduce( ( accumulator, curMatch, curIndex, array ) => {
+                // Basically what we're doing here is:
+                // for n we're adding part from **after** n.index till n+1.index (excluding char matched at n).
+                // For last iteration we want to match all the way to the end of string, thus undefined.
+                let nextPartStart = curMatch.index + curMatch.match.length,
+                    nextPartEnd = curIndex === array.length - 1 ? undefined : array[ curIndex + 1 ].index;
+
+                return accumulator + line.substring( nextPartStart, nextPartEnd );
+            }, line.substr( 0, matches[ 0 ].index ) );
+        } else {
+            updatedContent += line;
+        }
+    }
+
+    ret.content = updatedContent;
 
     return ret;
 };
