@@ -163,4 +163,31 @@
             }, null, 'Sel#4' );
         } );
     } );
+
+    suite.only( 'Readme examples', () => {
+        test( 'example 1', function() {
+            return setContent( 'Fancy content!' )
+                .then( textEditor => {
+                    assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
+                } );
+        } );
+
+        test( 'example 2', function() {
+            return setContent.withSelection( 'Put a collapsed selection here ^' )
+                .then( textEditor => {
+                    assert.strictEqual( textEditor.document.lineAt( 0 ).text, 'Put a collapsed selection here ' );
+                    assert.equal( textEditor.selection.isEmpty, true );
+                    assert.equal( textEditor.selection.start.character, 31 );
+                } );
+        } );
+
+        // Not supported yet.
+        // test( 'example 3', function() {
+        //     setContent.withSelection( 'Fancy [content}!' )
+        //         .then( textEditor => {
+        //             assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
+        //             assert.equal( textEditor.selection.isEmpty, false );
+        //         } );
+        // } );
+    } );
 } )();

@@ -5,7 +5,7 @@ Provides a set of helper functions for setting the content of the Visual Studio 
 
 ## Usage
 
-```
+```javascript
 const vscode = vscode = require( 'vscode' ),
     setContent = require( 'vscode-set-content' );
 
@@ -15,15 +15,16 @@ setContent( 'Fancy content!' )
     } );
 ```
 
-Or set editor with a selection:
+Setting the content with a collapsed selection (`^`):
 
-```
+```javascript
 const vscode = vscode = require( 'vscode' ),
     setContent = require( 'vscode-set-content' );
 
-setContent.withSelection( 'Fancy [content}!' )
+setContent.withSelection( 'Put a collapsed selection here ^' )
     .then( textEditor => {
-        assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
-		assert.equal( false, textEditor.selection.isEmpty );
+        assert.strictEqual( textEditor.document.lineAt( 0 ).text, 'Put a collapsed selection here ' );
+        assert.equal( textEditor.selection.isEmpty, true );
+        assert.equal( textEditor.selection.start.character, 31 );
     } );
 ```
