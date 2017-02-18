@@ -60,6 +60,16 @@
                     assert.strictEqual( getContent( editor ), 'foo', 'Invalid content' );
                 } );
         } );
+
+        test( 'It sets multiple collapsed selections multiline', function() {
+            let content = 'a^a^\n\n^\n^foo^\nbar';
+
+            return setContent.withSelection( content )
+                .then( editor => {
+                    assert.strictEqual( getContent( editor ), 'aa\n\n\nfoo\nbar', 'Invalid content' );
+                    assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
+                } );
+        } );
     } );
 
     suite( '_extractSelections', () => {
