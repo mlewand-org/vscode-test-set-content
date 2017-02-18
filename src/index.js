@@ -101,8 +101,17 @@ setContent._extractSelections = function( inContent ) {
 };
 
 setContent.withSelection = function( content, options ) {
-    return setContent( content, options )
+
+    let parsedContent = setContent._extractSelections( content );
+
+    return setContent( parsedContent.content, options )
         .then( editor => {
+            if ( parsedContent.selections.length ) {
+                // Set the selections only if we picked some, it's not recommended to set editor.selections to an
+                // empty array.
+                editor.selections = parsedContent.selections;
+            }
+
             // Make the selections.
             return editor;
         } );
