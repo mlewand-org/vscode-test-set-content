@@ -226,6 +226,16 @@
                 character: 2
             }, null, 'Sel#4' );
         } );
+
+        test( 'Works with unicode', function() {
+            let ret = setContent._extractSelections( 'aa śśćęęę.ęęść óóóÓÓÓóó^.ęęężźźź' );
+
+            assert.strictEqual( ret.content, 'aa śśćęęę.ęęść óóóÓÓÓóó.ęęężźźź' );
+            assertSelection( ret.selections[ 0 ], {
+                line: 0,
+                character: 23
+            }, null, 'Sel#1' );
+        } );
     } );
 
     suite( 'Readme examples', () => {
