@@ -7,7 +7,7 @@ Provides a set of helper functions for setting the content of the Visual Studio 
 
 ```javascript
 const vscode = vscode = require( 'vscode' ),
-    setContent = require( 'vscode-set-content' );
+    setContent = require( 'vscode-test-set-content' );
 
 setContent( 'Fancy content!' )
     .then( textEditor => {
@@ -19,7 +19,7 @@ Setting the content with a collapsed selection (`^`):
 
 ```javascript
 const vscode = vscode = require( 'vscode' ),
-    setContent = require( 'vscode-set-content' );
+    setContent = require( 'vscode-test-set-content' );
 
 setContent.withSelection( 'Put a collapsed selection here ^' )
     .then( textEditor => {
