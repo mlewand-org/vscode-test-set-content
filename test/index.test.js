@@ -133,6 +133,27 @@
                         assert.strictEqual( getContent.withSelection( editor ), content, 'Invalid content with selection' );
                     } );
             } );
+
+            test( 'It supports custom markers', function() {
+                let content = '&aa<bb)cc(dd>[e}{e]';
+
+                return setContent.withSelection( content, {
+                        anchor: {
+                            start: '<',
+                            end: '>'
+                        },
+                        active: {
+                            start: '(',
+                            end: ')'
+                        },
+                        caret: '&'
+                    } )
+                    .then( editor => {
+                        assert.strictEqual( getContent( editor ), 'aabbccdd[e}{e]' );
+                        assert.strictEqual( getContent.withSelection( editor ), '^aa[bb}cc{dd][e}{e]',
+                            'Invalid content with selection' );
+                    } );
+            } );
         } );
     } );
 
@@ -236,17 +257,41 @@
                 character: 23
             }, null, 'Sel#1' );
         } );
+
+        test( 'Supports custom selection characters', function() {
+            let ret = setContent._extractSelections( 'aa<bb)cc(dd>[e}{e]', {
+                anchor: {
+                    start: '<',
+                    end: '>'
+                },
+                active: {
+                    start: '(',
+                    end: ')'
+                },
+                caret: '^'
+            } );
+
+            assert.strictEqual( ret.content, 'aabbccdd[e}{e]' );
+
+            assertSelection( ret.selections[ 0 ], {
+                line: 0,
+                character: 2
+            }, {
+                line: 0,
+                character: 4
+            }, 'Sel#1' );
+        } )
     } );
 
     suite( 'Readme examples', () => {
-        test( 'example 1', function() {
+        test( 'Example 1', function() {
             return setContent( 'Fancy content!' )
                 .then( textEditor => {
                     assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
                 } );
         } );
 
-        test( 'example 2', function() {
+        test( 'Example 2', function() {
             return setContent.withSelection( 'Put a collapsed selection here ^' )
                 .then( textEditor => {
                     assert.equal( textEditor.document.lineAt( 0 ).text, 'Put a collapsed selection here ' );
@@ -255,7 +300,7 @@
                 } );
         } );
 
-        test( 'example 3', function() {
+        test( 'Example 3', function() {
             return setContent.withSelection( 'Fancy [content}!' )
                 .then( textEditor => {
                     assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
@@ -263,6 +308,26 @@
                     assert.equal( textEditor.selection.start.character, 6 );
                     assert.equal( textEditor.selection.end.character, 13 );
                     assert.equal( textEditor.selection.active, textEditor.selection.end );
+                } );
+        } );
+
+        test.only( 'Example marker customization', function() {
+            return setContent.withSelection( 'let 🦄foo = () => { 🍕return🚒 []; };', {
+                    caret: '🦄',
+                    anchor: {
+                        start: '🍕',
+                        end: '🙈'
+                    },
+                    active: {
+                        start: '🤦',
+                        end: '🚒'
+                    }
+                } )
+                .then( textEditor => {
+                    assert.equal( textEditor.document.lineAt( 0 ).text, 'let foo = () => { return []; };' );
+                    assert.equal( textEditor.selection.isEmpty, true );
+                    assert.equal( textEditor.selection.start.character, 4 );
+                    assert.equal( textEditor.selection.end.character, 4 );
                 } );
         } );
     } );

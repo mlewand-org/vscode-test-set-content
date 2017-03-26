@@ -1,5 +1,6 @@
 const vscode = require( 'vscode' ),
-    execall = require( 'execall' );
+    execall = require( 'execall' ),
+    clone = require( 'clone' );
 
 /**
  * Returns a promise that will provide a tet editor with given `content`.
@@ -7,12 +8,17 @@ const vscode = require( 'vscode' ),
  * @param {String} content
  * @param {Object} [options] Config object.
  * @param {String} [options.language='text'] Indicates what language should the editor use.
+ * @param {String} [options.caret='^'] Character used to represent caret (collapsed selection).
+ * @param {Object} [options.anchor]
+ * @param {String} [options.anchor.start='['] Selection anchor open character.
+ * @param {String} [options.anchor.end=']'] Selection anchor close character.
+ * @param {Object} [options.active]
+ * @param {String} [options.active.start='{'] Selection active part open character.
+ * @param {String} [options.active.end='}'] Selection active part close character.
  * @returns {Promise<TextEditor>}
  */
 function setContent( content, options ) {
-    options = options || {
-        language: 'text'
-    };
+    options = getOptions( options );
 
     return vscode.workspace.openTextDocument( {
             language: options.language
@@ -46,33 +52,63 @@ function* readLines( content ) {
     }
 }
 
+function getOptions( inOptions ) {
+    inOptions = clone( inOptions ) || {};
+
+    inOptions.caret = inOptions.caret || '^';
+
+    inOptions.language = inOptions.language || 'text';
+
+    inOptions.anchor = inOptions.anchor || {
+        start: '[',
+        end: ']'
+    };
+
+    inOptions.active = inOptions.active || {
+        start: '{',
+        end: '}'
+    };
+
+    return inOptions;
+}
+
 /**
  * Extracts selections and markerless content out of given `inContent`.
  *
  * @private
  * @param {String} inContent Input content with selection markers.
+ * @param {Object} options Options as passed to `setContent` method.
  * @returns {Object} ret
  * @returns {String} ret.content Content without selection-specific markers.
  * @returns {Selection[]} ret.selections Selections picked from `inContent`.
  */
-setContent._extractSelections = function( inContent ) {
+setContent._extractSelections = function( inContent, options ) {
+    options = getOptions( options );
+
     let selections = [],
         ret = {
             content: '',
             selections: selections
         };
 
-    let collapsedRegexp = /\^|\[|\{|\]|\}/gm,
+    let selectionMarkers = [
+            options.caret,
+            options.active.start,
+            options.active.end,
+            options.anchor.start,
+            options.anchor.end
+        ],
+        collapsedRegexp = new RegExp( selectionMarkers.map( ch => '\\' + ch ).join( '|' ), 'gm' ),
         updatedContent = '',
         lineNumber = -1,
         // An array of { pos: Position, anchor: Boolean } objects.
         unbalancedRangeOpenings = [],
         // A mapping of handling methods to a given marker.
         markerHandlers = {
-            '^': pos => selections.push( new vscode.Selection( pos, pos ) ),
-            '[': pos => unbalancedRangeOpenings.push( { pos: pos, anchor: true } ),
-            '{': pos => unbalancedRangeOpenings.push( { pos: pos, anchor: false } ),
-            ']': pos => {
+            [ options.caret ]: pos => selections.push( new vscode.Selection( pos, pos ) ),
+            [ options.anchor.start ]: pos => unbalancedRangeOpenings.push( { pos: pos, anchor: true } ),
+            [ options.active.start ]: pos => unbalancedRangeOpenings.push( { pos: pos, anchor: false } ),
+            [ options.anchor.end ]: pos => {
                 if ( !unbalancedRangeOpenings.length ) {
                     return;
                 }
@@ -81,7 +117,7 @@ setContent._extractSelections = function( inContent ) {
 
                 selections.push( new vscode.Selection( pos, matchedOpening.pos ) );
             },
-            '}': pos => {
+            [ options.active.end ]: pos => {
                 if ( !unbalancedRangeOpenings.length ) {
                     return;
                 }
@@ -127,8 +163,9 @@ setContent._extractSelections = function( inContent ) {
 };
 
 setContent.withSelection = function( content, options ) {
+    options = getOptions( options );
 
-    let parsedContent = setContent._extractSelections( content );
+    let parsedContent = setContent._extractSelections( content, options );
 
     return setContent( parsedContent.content, options )
         .then( editor => {

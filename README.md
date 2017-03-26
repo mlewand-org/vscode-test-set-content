@@ -6,8 +6,7 @@ Provides a set of helper functions for setting the content of the Visual Studio 
 ## Usage
 
 ```javascript
-const vscode = vscode = require( 'vscode' ),
-    setContent = require( 'vscode-test-set-content' );
+const setContent = require( 'vscode-test-set-content' );
 
 setContent( 'Fancy content!' )
     .then( textEditor => {
@@ -18,8 +17,7 @@ setContent( 'Fancy content!' )
 Setting the content with a collapsed selection (`^`):
 
 ```javascript
-const vscode = vscode = require( 'vscode' ),
-    setContent = require( 'vscode-test-set-content' );
+const setContent = require( 'vscode-test-set-content' );
 
 setContent.withSelection( 'Put a collapsed selection here ^' )
     .then( textEditor => {
@@ -51,6 +49,29 @@ setContent.withSelection( 'Fancy [content}!' )
     * `{`, `}` - Marks where selection _active_ opening or close should be.
 
         Active part is the part where the selection ended, and it's the point from which the selection is continued from if you continue to enlarge the selection.
+
+### Customizing Markers
+
+If the default markers collide with your use case, you can customize it.
+
+```javascript
+const setContent = require( 'vscode-test-set-content' );
+
+setContent.withSelection( 'let 🦄foo = () => { 🍕return🚒 []; };', {
+        caret: '🦄',
+        anchor: {
+            start: '🍕',
+            end: '🙈'
+        },
+        active: {
+            start: '🤦',
+            end: '🚒'
+        }
+    } )
+    .then( textEditor => {
+        // Sets editor content to "let foo = () => { return []; };" with caret before "foo", and "return" selected.
+    } );
+```
 
 ## Limitations
 
