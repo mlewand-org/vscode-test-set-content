@@ -284,14 +284,14 @@
     } );
 
     suite( 'Readme examples', () => {
-        test( 'example 1', function() {
+        test( 'Example 1', function() {
             return setContent( 'Fancy content!' )
                 .then( textEditor => {
                     assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
                 } );
         } );
 
-        test( 'example 2', function() {
+        test( 'Example 2', function() {
             return setContent.withSelection( 'Put a collapsed selection here ^' )
                 .then( textEditor => {
                     assert.equal( textEditor.document.lineAt( 0 ).text, 'Put a collapsed selection here ' );
@@ -300,7 +300,7 @@
                 } );
         } );
 
-        test( 'example 3', function() {
+        test( 'Example 3', function() {
             return setContent.withSelection( 'Fancy [content}!' )
                 .then( textEditor => {
                     assert.equal( textEditor.document.lineAt( 0 ).text, 'Fancy content!' );
@@ -308,6 +308,26 @@
                     assert.equal( textEditor.selection.start.character, 6 );
                     assert.equal( textEditor.selection.end.character, 13 );
                     assert.equal( textEditor.selection.active, textEditor.selection.end );
+                } );
+        } );
+
+        test.only( 'Example marker customization', function() {
+            return setContent.withSelection( 'let 🦄foo = () => { 🍕return🚒 []; };', {
+                    caret: '🦄',
+                    anchor: {
+                        start: '🍕',
+                        end: '🙈'
+                    },
+                    active: {
+                        start: '🤦',
+                        end: '🚒'
+                    }
+                } )
+                .then( textEditor => {
+                    assert.equal( textEditor.document.lineAt( 0 ).text, 'let foo = () => { return []; };' );
+                    assert.equal( textEditor.selection.isEmpty, true );
+                    assert.equal( textEditor.selection.start.character, 4 );
+                    assert.equal( textEditor.selection.end.character, 4 );
                 } );
         } );
     } );
