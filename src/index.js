@@ -7,6 +7,13 @@ const vscode = require( 'vscode' ),
  * @param {String} content
  * @param {Object} [options] Config object.
  * @param {String} [options.language='text'] Indicates what language should the editor use.
+ * @param {String} [options.caret='^'] Character used to represent caret (collapsed selection).
+ * @param {Object} [options.anchor]
+ * @param {String} [options.anchor.start='['] Selection anchor open character.
+ * @param {String} [options.anchor.end=']'] Selection anchor close character.
+ * @param {Object} [options.active]
+ * @param {String} [options.active.start='{'] Selection active part open character.
+ * @param {String} [options.active.end='}'] Selection active part close character.
  * @returns {Promise<TextEditor>}
  */
 function setContent( content, options ) {
